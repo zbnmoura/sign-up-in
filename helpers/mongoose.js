@@ -8,48 +8,54 @@ const mongoose_connect = async (current_uri = db_uri) => {
     });
 };
 
-//timestamp: data_criacao, data_atualizacao, ultimo_login(first = data_criação)
-//token: jwt
-//email unique: get ou fazer "unique"
 const user_schema = new mongoose.Schema(
     {
-        _id: { type: mongoose.Schema.ObjectId, auto: true },
-        nome: { type: String, lowercase: true },
-        email: { type: String, lowercase: true, trim: true },
-        senha: String,
-        token: String,
-        telefones: [], //FIXME ver a possibilidade de modelar o numero e ddd
-        ultimo_login: { type: Date, default: Date.now },
+        _id: { type: mongoose.Schema.ObjectId, auto: true }, //auto
+        ultimo_login: { type: Date, default: Date.now }, //auto
+        nome: { type: String, required: true }, //user
+        email: { type: String, required: true, lowercase: true, index: { unique: true } }, //user
+        telefones: { type: Array, required: true }, //user
+        senha: { type: String, required: true }, //hash
+        token: { type: String }, //hash
     },
     {
         timestamps: {
-            createdAt: 'data_criacao',
-            updatedAt: 'data_atualizacao',
+            createdAt: 'data_criacao', //auto
+            updatedAt: 'data_atualizacao', //auto
         },
     },
 );
 
 const User = mongoose.model('User', user_schema);
 
+/** default functions */
 //create
-const save_doc = async (args, db_uri_test) => {
+const save_document = async (args, db_uri_test) => {
     await mongoose_connect(db_uri_test);
-    const { id: _id, nome, email, senha, token, telefones } = await User.create(args);
-    return { id: _id, nome, email, senha, token, telefones };
+    const document = await User.create(args);
+    return document;
 };
+
+const update_user = async (args, db_uri_test) => {
+    await mongoose_connect(db_uri_test);
+    const doc = await User.updateOne(args);
+    return doc;
+};
+
 //read
 //update
 
 (async () => {
     try {
-        const x = await save_doc({
-            nome: 'BrUnO',
+        const sav = await save_document({
+            nome: 'Soruzo marito',
             email: 'zbnmoura@gmail.com',
             senha: '123',
             token: '123',
             telefones: [{ numero: '12345', ddd: '123' }],
         });
-        console.log(x);
+
+        console.log({ sav });
     } catch (error) {
         console.error({ error });
     }
