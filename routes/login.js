@@ -1,33 +1,25 @@
 // sign up
 
-/**
- * Usar status codes de acordo
-Em caso de sucesso irá retornar um usuário mais os campos:
-id: id do usuário (pode ser o próprio gerado pelo banco, porém seria interessante
-se fosse um GUID)
-data_criacao: data da criação do usuário
-data_atualizacao: data da última atualização do usuário
-ultimo_login: data do último login (no caso da criação, será a mesma que a
-criação)
-token: token de acesso da API (pode ser um GUID ou um JWT)
-Caso o e-mail já exista, deverá retornar erro com a mensagem "E-mail já
-existente".
-O token deverá ser persistido junto com o usuário
- */
+const request = {
+    nome: 'string',
+    email: 'string',
+    senha: 'senha',
+    telefones: [
+        {
+            numero: '123456789',
+            ddd: '11',
+        },
+    ],
+};
 
-// {
-//     "nome": "string",
-//     "email": "string",
-//     "senha": "senha",
-//     "telefones": [
-//     {
-//     "numero": "123456789",
-//     "ddd": "11"
-//     }
-//     ]
-//     }
-
-
+const usuario = {
+    nome,
+    email,
+    telefones,
+};
+const response_200 = { usuario, id, data_criacao, data_atualizacao, ultimo_login, token };
+const response_erro_email = 'E-mail já existente';
+const response_erro_geral = 'erro geral';
 // sign in
 
 /**
