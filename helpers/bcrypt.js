@@ -1,20 +1,15 @@
 const bcrypt = require('bcrypt');
 const SALT_WORK_FACTOR = 10;
 
-const hash_generator = async (senha) => {
+const hash_generator = async (password) => {
     const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
-    const hash = await bcrypt.hash(senha, salt);
+    const hash = await bcrypt.hash(password, salt);
     return hash;
 };
 
-module.exports = { hash_generator }
+const hash_compare = async (args) => {
+    const { incoming_password, doc_password } = args;
+    return await bcrypt.compare(incoming_password, doc_password);
+};
 
-// (async () => {
-//     try {
-//         const sav = await hash_generator('1234'); //5eefd794fddd9bca8e896859
-
-//         console.log({ sav });
-//     } catch (error) {
-//         console.error({ error });
-//     }
-// })();
+module.exports = { hash_generator, hash_compare };
