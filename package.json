@@ -1,0 +1,20 @@
+{
+  "name": "sign-up-in",
+  "version": "1.0.0",
+  "description": "sky test",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zbnmoura/sign-up-in.git"
+  },
+  "keywords": [],
+  "author": "bruno neves de moura <zbnmoura@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zbnmoura/sign-up-in/issues"
+  },
+  "homepage": "https://github.com/zbnmoura/sign-up-in#readme"
+}
