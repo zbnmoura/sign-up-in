@@ -12,12 +12,7 @@ app.use('/users', user);
 
 //pega todas as rotas "nao existentes"
 app.get('*', (req, res) => {
-    return res.json({ message: 'nt' });
+    return res.status(404).json({ message: 'Endpoint não encontrado' });
 });
 
 app.listen(port, () => console.log(`running on port: ${port}`));
-
-//TODO get se o email ja existe na base //"E-mail já existente" (signup)
-//TODO tratar erros do mongoose na rota
-
-//TODO validar todos http
