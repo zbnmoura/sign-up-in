@@ -34,12 +34,17 @@ const create_document = async (args, db_uri_test) => {
     const document = await User.create({ name, email, phones, password: hash_password, token });
     return document;
 };
+//find by email
+const find_by_email = async (email) => {
+    await mongoose_connect(db_uri_test);
+    const document = await User.findOne({ email });
+    return document;
+};
 
 const find_email_password = async (args, db_uri_test) => {
     const { email, password } = args;
-    await mongoose_connect(db_uri_test);
 
-    const document = await User.findOne({ email });
+    const document = await find_by_email(email);
     //se o email existir
     if (document !== null) {
         const status = await hash_compare({ incoming_password: password, doc_password: document.password });
@@ -60,4 +65,4 @@ const find_by_id = async (id, db_uri_test) => {
     await mongoose_connect(db_uri_test);
     return await User.findById(id);
 };
-module.exports = { create_document, find_email_password, find_by_id };
+module.exports = { create_document, find_email_password, find_by_id, find_by_email };
