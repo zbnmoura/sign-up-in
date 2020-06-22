@@ -1,13 +1,14 @@
 const express = require('express');
-const body_parser = require('body-parser');
-const { create_document, read_document } = require('../helpers/mongoose');
 const router = express.Router();
+const body_parser = require('body-parser');
+
+const { create_document, find_email_password } = require('../helpers/mongoose');
 
 router.post('/up', body_parser.json());
 router.post('/up', async (req, res) => {
     const { nome, email, senha, telefones } = req.body;
     try {
-        const { _id: id, name, phones, token, last_login, created_at, updated_at } = await create_document({
+        const { _id, name, phones, token, last_login, created_at, updated_at } = await create_document({
             name: nome,
             email,
             phones: telefones,
@@ -16,7 +17,7 @@ router.post('/up', async (req, res) => {
 
         return res.status(201).json({
             token,
-            id,
+            id: _id,
             email,
             nome: name,
             telefones: phones,
@@ -34,7 +35,7 @@ router.post('/in', body_parser.json());
 router.post('/in', async (req, res) => {
     const { email, senha } = req.body;
     try {
-        const document = await read_document({ email, password: senha });
+        const document = await find_email_password({ email, password: senha });
         if (document === null) {
             return res.status(401).json({ message: 'Usuário e/ou senha inválidos' });
         }
