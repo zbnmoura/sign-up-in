@@ -37,7 +37,7 @@ router.post('/up', async (req, res) => {
         const {
             details: [{ message }],
         } = error;
-        console.error(message);
+        console.error(message || error);
         return res.status(400).json({ message } || 'Erro inesperado');
     }
 });
@@ -66,7 +66,7 @@ router.post('/in', async (req, res) => {
         const {
             details: [{ message }],
         } = error;
-        console.error(message);
+        console.error(message || error);
         return res.status(400).json({ message } || 'Erro inesperado');
     }
 });

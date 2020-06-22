@@ -13,7 +13,7 @@ router.get('/:id', async (req, res, next) => {
         const {
             details: [{ message }],
         } = error;
-        console.error(message);
+        console.error(message || error);
         return res.status(400).json({ message } || 'Erro inesperado');
     }
     //se o token esta presente
@@ -59,7 +59,7 @@ router.get('/:id', async (req, res) => {
         const {
             details: [{ message }],
         } = error;
-        console.error(message);
+        console.error(message || error);
         return res.status(400).json({ message } || 'Erro inesperado');
     }
 });

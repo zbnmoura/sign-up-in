@@ -4,7 +4,6 @@ const SALT_WORK_FACTOR = 10;
 const hash_generator = async (password) => {
     const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
     const hash = await bcrypt.hash(password, salt);
-    console.log(hash);
     return hash;
 };
 
