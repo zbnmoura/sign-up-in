@@ -2,6 +2,34 @@ const express = require('express');
 const router = express.Router();
 const { find_by_id } = require('../helpers/mongoose');
 
+router.get('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    const { authorization } = req.headers;
+    //se o token esta presente
+    if (!authorization) return res.status(400).json({ message: 'nao autorizasi' });
+    const { token, last_login } = await find_by_id(id);
+    //separando o Bearer do "token"
+    const pure_authorization = authorization.split(' ')[1];
+    //token valido
+    if (token === pure_authorization) {
+        const today = new Date();
+        const new_last_login = new Date(last_login);
+        const diff_dates = today - new_last_login;
+        //converte para minutos a diferença entre hoje e o ultimo login
+        const diff_minutes = Math.round(((diff_dates % 86400000) % 3600000) / 60000);
+        //se a sessao é maior que 30 minutos
+        if (diff_minutes > 30) {
+            return res.status(400).json({ message: 'sessao expirou' });
+        }
+        //tudo ok
+        else {
+            return next();
+        }
+    } else {
+        return res.status(400).json({ message: 'nao autorizasi' });
+    }
+});
+
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -23,18 +51,3 @@ router.get('/:id', async (req, res) => {
 });
 
 module.exports = router;
-
-/**
- * Chamadas para este endpoint devem conter um header na requisição de Authentication com o valor "Bearer {token}" onde {token} é o valor do token passado na criação ou sign in de um usuário.
-Caso o token não exista, retornar erro com status apropriado com a mensagem
-"Não autorizado".
-Caso o token exista, buscar o usuário pelo user_id passado no path e comparar
-se o token no modelo é igual ao token passado no header.
-Caso não seja o mesmo token, retornar erro com status apropriado e mensagem
-"Não autorizado"
-Caso seja o mesmo token, verificar se o último login foi a MENOS que 30
-minutos atrás.
-Caso não seja a MENOS que 30 minutos atrás, retornar erro com status
-apropriado com mensagem "Sessão inválida"
-Caso tudo esteja ok, retornar o usuário.
- */
