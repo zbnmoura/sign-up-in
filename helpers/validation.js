@@ -8,7 +8,7 @@ const sign_in = Joi.object({
 });
 
 const sign_up = Joi.object({
-    nome: Joi.string().alphanum().min(3).max(30),
+    nome: Joi.string().min(3).max(30),
     email: Joi.string()
         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'br'] } })
         .required(),
