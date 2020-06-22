@@ -7,6 +7,10 @@ const { create_document, find_email_password } = require('../helpers/mongoose');
 router.post('/up', body_parser.json());
 router.post('/up', async (req, res) => {
     const { nome, email, senha, telefones } = req.body;
+    //validação simplissima
+    if (!email || !senha) {
+        return res.status(400).json({ message: 'email and senha is required' });
+    }
     try {
         const { _id, name, phones, token, last_login, created_at, updated_at } = await create_document({
             name: nome,
@@ -34,6 +38,10 @@ router.post('/up', async (req, res) => {
 router.post('/in', body_parser.json());
 router.post('/in', async (req, res) => {
     const { email, senha } = req.body;
+    //validação simplissima
+    if (!email || !senha) {
+        return res.status(400).json({ message: 'email and senha is required' });
+    }
     try {
         const document = await find_email_password({ email, password: senha });
         if (document === null) {
