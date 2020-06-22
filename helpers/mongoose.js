@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const db_uri = 'mongodb://localhost/prod';
+const db_uri = process.env.DB_URI || 'mongodb://localhost/prod';
 
 const { hash_compare, hash_generator } = require('./bcrypt');
 
-const mongoose_connect = async (current_uri = db_uri) => {
-    return await mongoose.connect(current_uri, {
+const mongoose_connect = async () => {
+    return await mongoose.connect(db_uri, {
         useUnifiedTopology: true,
         useNewUrlParser: true,
         useCreateIndex: true,
@@ -25,9 +25,9 @@ const user_schema = new mongoose.Schema(
 
 const User = mongoose.model('User', user_schema);
 
-const create_document = async (args, db_uri_test) => {
+const create_document = async (args) => {
     const { name, email, phones, password } = args;
-    await mongoose_connect(db_uri_test);
+    await mongoose_connect();
 
     const hash_password = await hash_generator(password);
     const token = await hash_generator(email);
@@ -36,12 +36,12 @@ const create_document = async (args, db_uri_test) => {
 };
 
 const find_by_email = async (email) => {
-    await mongoose_connect(db_uri_test);
+    await mongoose_connect();
     const document = await User.findOne({ email });
     return document;
 };
 
-const find_email_password = async (args, db_uri_test) => {
+const find_email_password = async (args) => {
     const { email, password } = args;
 
     const document = await find_by_email(email);
@@ -61,8 +61,8 @@ const find_email_password = async (args, db_uri_test) => {
     }
 };
 
-const find_by_id = async (id, db_uri_test) => {
-    await mongoose_connect(db_uri_test);
+const find_by_id = async (id) => {
+    await mongoose_connect();
     return await User.findById(id);
 };
 module.exports = { create_document, find_email_password, find_by_id, find_by_email };
