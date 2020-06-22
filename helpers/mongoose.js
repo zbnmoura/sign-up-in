@@ -7,7 +7,7 @@ const mongoose_connect = async (current_uri = db_uri) => {
     return await mongoose.connect(current_uri, {
         useUnifiedTopology: true,
         useNewUrlParser: true,
-        useCreateIndex: true,
+        // useCreateIndex: true,
     });
 };
 
@@ -25,7 +25,7 @@ const user_schema = new mongoose.Schema(
 
 const User = mongoose.model('User', user_schema);
 
-const save_document = async (args, db_uri_test) => {
+const create_document = async (args, db_uri_test) => {
     const { name, email, phones, password } = args;
     await mongoose_connect(db_uri_test);
 
@@ -35,21 +35,25 @@ const save_document = async (args, db_uri_test) => {
     return document;
 };
 
-module.exports = { save_document };
-// findOne
+const read_document = async (args, db_uri_test) => {
+    const { email, password } = args;
+    await mongoose_connect(db_uri_test);
 
-// (async () => {
-//     try {
-//         const sav = await save_document({
-//             nome: 'Soruzo maritssss',
-//             email: 'zbnmouro@gmail.com',
-//             senha: '123',
-//             token: '123',
-//             telefones: [{ numero: '12345', ddd: '123' }],
-//         }); //5eefd794fddd9bca8e896859
+    const document = await User.findOne({ email });
+    //se o email existir
+    if (document !== null) {
+        const status = await hash_compare({ incoming_password: password, doc_password: document.password });
+        //se a senha for verdadeira
+        if (status === true) {
+            return document;
+        } else {
+            //senha incorreta
+            return null;
+        }
+    } else {
+        //email nao existente
+        return null;
+    }
+};
 
-//         console.log(sav);
-//     } catch (error) {
-//         console.error({ error });
-//     }
-// })();
+module.exports = { create_document, read_document };
