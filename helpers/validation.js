@@ -24,7 +24,8 @@ const sign_up = Joi.object({
 });
 
 const user_by_id = Joi.object({
-    id: Joi.string().guid(),
+    id: Joi.string().guid().required(),
+    authorization: Joi.string().required(),
 });
 
 const schemes = {
