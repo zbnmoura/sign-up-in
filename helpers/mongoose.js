@@ -7,7 +7,7 @@ const mongoose_connect = async (current_uri = db_uri) => {
     return await mongoose.connect(current_uri, {
         useUnifiedTopology: true,
         useNewUrlParser: true,
-        // useCreateIndex: true,
+        useCreateIndex: true,
     });
 };
 
@@ -35,7 +35,7 @@ const create_document = async (args, db_uri_test) => {
     return document;
 };
 
-const read_document = async (args, db_uri_test) => {
+const find_email_password = async (args, db_uri_test) => {
     const { email, password } = args;
     await mongoose_connect(db_uri_test);
 
@@ -56,4 +56,8 @@ const read_document = async (args, db_uri_test) => {
     }
 };
 
-module.exports = { create_document, read_document };
+const find_by_id = async (id, db_uri_test) => {
+    await mongoose_connect(db_uri_test);
+    return await User.findById(id);
+};
+module.exports = { create_document, find_email_password, find_by_id };
