@@ -5,12 +5,12 @@ const { find_by_id } = require('../helpers/mongoose');
 const { run_validation } = require('../helpers/validation');
 
 //desculpe pela massaroca, da pra melhorar
+//TODO desacoplar ifs numa função
 router.get('/:id', async (req, res, next) => {
     const { id } = req.params;
     const { authorization } = req.headers;
     //separando o Bearer do "token"
     const pure_authorization = authorization.split(' ')[1];
-console.log({pure_authorization})
     try {
         //verifica se o token e id estao presentes no formato indicado
         await run_validation('user_by_id', { id, authorization: pure_authorization });
