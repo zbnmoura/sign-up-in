@@ -65,4 +65,5 @@ const find_by_id = async (id) => {
     await mongoose_connect();
     return await User.findById(id);
 };
+
 module.exports = { create_document, find_email_password, find_by_id, find_by_email };
