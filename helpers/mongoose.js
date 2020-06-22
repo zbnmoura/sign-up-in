@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
+
 const db_uri = process.env.DB_URI || 'mongodb://localhost/prod';
 
 const { hash_compare, hash_generator } = require('./bcrypt');
@@ -13,6 +15,7 @@ const mongoose_connect = async () => {
 
 const user_schema = new mongoose.Schema(
     {
+        _id: { type: String, default: uuidv4() },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         name: { type: String },
