@@ -1,62 +1,55 @@
 const mongoose = require('mongoose');
 const db_uri = 'mongodb://localhost/prod';
 
+const { hash_compare, hash_generator } = require('./bcrypt');
+
 const mongoose_connect = async (current_uri = db_uri) => {
     return await mongoose.connect(current_uri, {
         useUnifiedTopology: true,
         useNewUrlParser: true,
+        useCreateIndex: true,
     });
 };
 
 const user_schema = new mongoose.Schema(
     {
-        _id: { type: mongoose.Schema.ObjectId, auto: true }, //auto
-        ultimo_login: { type: Date, default: Date.now }, //auto
-        nome: { type: String, required: true }, //user
-        email: { type: String, required: true, lowercase: true, index: { unique: true } }, //user
-        telefones: { type: Array, required: true }, //user
-        senha: { type: String, required: true }, //hash
-        token: { type: String }, //hash
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+        name: { type: String },
+        phones: { type: Array },
+        token: { type: String },
+        last_login: { type: Date, default: Date.now },
     },
-    {
-        timestamps: {
-            createdAt: 'data_criacao', //auto
-            updatedAt: 'data_atualizacao', //auto
-        },
-    },
+    { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
 const User = mongoose.model('User', user_schema);
 
-/** default functions */
-//create
 const save_document = async (args, db_uri_test) => {
+    const { name, email, phones, password } = args;
     await mongoose_connect(db_uri_test);
-    const document = await User.create(args);
+
+    const hash_password = await hash_generator(password);
+    const token = await hash_generator(email);
+    const document = await User.create({ name, email, phones, password: hash_password, token });
     return document;
 };
 
-const update_user = async (args, db_uri_test) => {
-    await mongoose_connect(db_uri_test);
-    const doc = await User.updateOne(args);
-    return doc;
-};
+module.exports = { save_document };
+// findOne
 
-//read
-//update
+// (async () => {
+//     try {
+//         const sav = await save_document({
+//             nome: 'Soruzo maritssss',
+//             email: 'zbnmouro@gmail.com',
+//             senha: '123',
+//             token: '123',
+//             telefones: [{ numero: '12345', ddd: '123' }],
+//         }); //5eefd794fddd9bca8e896859
 
-(async () => {
-    try {
-        const sav = await save_document({
-            nome: 'Soruzo marito',
-            email: 'zbnmoura@gmail.com',
-            senha: '123',
-            token: '123',
-            telefones: [{ numero: '12345', ddd: '123' }],
-        });
-
-        console.log({ sav });
-    } catch (error) {
-        console.error({ error });
-    }
-})();
+//         console.log(sav);
+//     } catch (error) {
+//         console.error({ error });
+//     }
+// })();
