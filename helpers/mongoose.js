@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
-const db_uri = process.env.DB_URI || 'mongodb://localhost/sky-db';
+const db_uri = 'mongodb://localhost/novo';
 
 const { hash_compare, hash_generator } = require('./bcrypt');
 
@@ -9,12 +9,13 @@ const mongoose_connect = async () => {
     return await mongoose.connect(db_uri, {
         useUnifiedTopology: true,
         useNewUrlParser: true,
+        useCreateIndex: true,
     });
 };
 
 const user_schema = new mongoose.Schema(
     {
-        _id: { type: String, required: true },
+        _id: { type: String, required: true, auto: true },
         email: { type: String, required: true },
         password: { type: String, required: true },
         name: { type: String },
@@ -25,7 +26,7 @@ const user_schema = new mongoose.Schema(
     { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
-const User = mongoose.model('User', user_schema);
+const User = mongoose.model('User', user_schema, 'User');
 
 const create_document = async (args) => {
     const { name, email, phones, password } = args;
@@ -65,7 +66,8 @@ const find_email_password = async (args) => {
 
 const find_by_id = async (id) => {
     await mongoose_connect();
-    return await User.findById(id);
+    const document = await User.findById(id);
+    return document;
 };
 
 module.exports = { create_document, find_email_password, find_by_id, find_by_email };
