@@ -34,7 +34,7 @@ const create_document = async (args, db_uri_test) => {
     const document = await User.create({ name, email, phones, password: hash_password, token });
     return document;
 };
-//find by email
+
 const find_by_email = async (email) => {
     await mongoose_connect(db_uri_test);
     const document = await User.findOne({ email });
