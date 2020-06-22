@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
-const db_uri = process.env.DB_URI || 'mongodb://localhost/prod';
+const db_uri = process.env.DB_URI || 'mongodb://localhost/sky-db';
 
 const { hash_compare, hash_generator } = require('./bcrypt');
 
@@ -9,14 +9,13 @@ const mongoose_connect = async () => {
     return await mongoose.connect(db_uri, {
         useUnifiedTopology: true,
         useNewUrlParser: true,
-        useCreateIndex: true,
     });
 };
 
 const user_schema = new mongoose.Schema(
     {
-        _id: { type: String, default: uuidv4() },
-        email: { type: String, required: true, unique: true },
+        _id: { type: String, required: true },
+        email: { type: String, required: true },
         password: { type: String, required: true },
         name: { type: String },
         phones: { type: Array },
@@ -34,7 +33,7 @@ const create_document = async (args) => {
 
     const hash_password = await hash_generator(password);
     const token = await hash_generator(email);
-    const document = await User.create({ name, email, phones, password: hash_password, token });
+    const document = await User.create({ _id: uuidv4(), name, email, phones, password: hash_password, token });
     return document;
 };
 
