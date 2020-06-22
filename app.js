@@ -11,7 +11,7 @@ app.use('/sign', sign);
 app.use('/users', user);
 
 //pega todas as rotas "nao existentes"
-app.get('*', (req, res) => {
+app.use('*', (req, res) => {
     return res.status(404).json({ message: 'Endpoint não encontrado' });
 });
 
