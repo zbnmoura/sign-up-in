@@ -4,11 +4,16 @@ const router = express.Router();
 const { find_by_id } = require('../helpers/mongoose');
 const { run_validation } = require('../helpers/validation');
 
+//desculpe pela massaroca, da pra melhorar
 router.get('/:id', async (req, res, next) => {
     const { id } = req.params;
     const { authorization } = req.headers;
+    //separando o Bearer do "token"
+    const pure_authorization = authorization.split(' ')[1];
+console.log({pure_authorization})
     try {
-        await run_validation('user_by_id', { id });
+        //verifica se o token e id estao presentes no formato indicado
+        await run_validation('user_by_id', { id, authorization: pure_authorization });
     } catch (error) {
         const {
             details: [{ message }],
@@ -17,27 +22,38 @@ router.get('/:id', async (req, res, next) => {
         return res.status(400).json({ message } || 'Erro inesperado');
     }
     //se o token esta presente
-    if (!authorization) return res.status(401).json({ message: 'Não autorizado' });
-    const { token, last_login } = await find_by_id(id);
-    //separando o Bearer do "token"
-    const pure_authorization = authorization.split(' ')[1];
-    //token valido
-    if (token === pure_authorization) {
-        const today = new Date();
-        const new_last_login = new Date(last_login);
-        const diff_dates = today - new_last_login;
-        //converte para minutos a diferença entre hoje e o ultimo login
-        const diff_minutes = Math.round(((diff_dates % 86400000) % 3600000) / 60000);
-        //se a sessao é maior que 30 minutos
-        if (diff_minutes > 30) {
+    // if (!authorization) return res.status(401).json({ message: 'Não autorizado' });
+    // const { token, last_login } = await find_by_id(id);
+    const user = await find_by_id(id);
+
+    //id encontrado na base
+    if (user) {
+        const { token, last_login } = user;
+
+        //token valido
+        if (token === pure_authorization) {
+            const today = new Date();
+            const new_last_login = new Date(last_login);
+            const diff_dates = today - new_last_login;
+
+            //converte para minutos a diferença entre hoje e o ultimo login
+            const diff_minutes = Math.round(((diff_dates % 86400000) % 3600000) / 60000);
+
+            //se a sessao é maior que 30 minutos
+            if (diff_minutes > 30) {
+                return res.status(401).json({ message: 'Não autorizado' });
+            }
+            //sesao valida
+            else {
+                return next();
+            }
+        }
+        //token na base igual a da requisição
+        else {
             return res.status(401).json({ message: 'Não autorizado' });
         }
-        //tudo ok
-        else {
-            return next();
-        }
     } else {
-        return res.status(401).json({ message: 'Não autorizado' });
+        return res.status(404).json({ message: 'Recurso não encontrado' });
     }
 });
 
